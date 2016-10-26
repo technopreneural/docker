@@ -1,12 +1,16 @@
 FROM		ubuntu:14.04
 MAINTAINER	technopreneural@yahoo.com
 
-RUN		DEBIAN_FRONTEND=noninteractive apt-get -y update \
-		&& apt-get install -y bind9 \
-		&& mkdir /etc/bind/zones
+#ENV		http_proxy 192.168.69.240:3142
 
-VOLUME		"/etc/bind/zones"		
+RUN		apt-get update \
+		&& DEBIAN_FRONTEND=noninteractive apt-get install -y \
+			bind9 \
+			bind9utils \
+			bind9-doc
+
+VOLUME		["/etc/bind"]		
 
 EXPOSE  	53/tcp 53/udp
 
-ENTRYPOINT	echo "include \"/etc/bind/zones/named.conf.zone\"" >> /etc/named.conf && /usr/sbin/named
+ENTRYPOINT	["/usr/sbin/named && tail -f /var/log/named/*"]
